@@ -1,7 +1,7 @@
 import 'core-js/fn/object/assign';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter as Router,Route,Switch,Redirect} from 'react-router-dom'
+import {BrowserRouter as Router,Route,HashRouter,MemoryRouter,Switch,Redirect} from 'react-router-dom'
 import App from './components/Main';
 
 import lbh from './components/Lbh';
@@ -17,7 +17,7 @@ ReactDOM.render(
             <Nav/>
             <Switch>
                 <Route exact path='/' component={lbh}/>
-                <Route path='/bh1' component={lbh1}/>
+                <Route path='/bh1/:id/:name' component={lbh1}/>
                 <Route path='/bh2' component={lbh2}/>
                 <Redirect from="/redirect" to="/bh1" />
                 <Route component={Error}/>

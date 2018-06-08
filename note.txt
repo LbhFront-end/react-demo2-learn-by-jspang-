@@ -1,0 +1,260 @@
+一、路由的使用
+1.Router的安装
+npm install --save react-router react-router-dom
+
+react-router:是基本的router包，里面的内容比较多，但是在网页开发中有很多用不到的
+react-router-dom:随着react生态环境的壮大，这个包比前者轻巧了很多
+
+创建三个页面
+
+import React from 'react';
+export default class page1 extends React.Component{
+  render(){
+    return(
+      <div>页面A</div>
+    )
+  }
+}
+
+
+import React from 'react';
+export default class page2 extends React.Component{
+  render(){
+    return(
+      <div>页面B</div>
+    )
+  }
+}
+
+import React from 'react';
+export default class page3 extends React.Component{
+  render(){
+    return(
+      <div>页面C</div>
+    )
+  }
+}
+
+将页面引入index.js中,并引入路由跟路由器,改写配置，增加路由设置
+
+import Page1 from './page1
+import Page2 from './page2'
+import Page3 from './page3'
+import {BrowserRouter as Router,Route } from 'react-router-dom'
+
+ReactDOM.render(
+  <Router>
+      <div>
+          <Route exact path = '/' component = {Page1}>
+          <Route path = '/Page2' component = {Page2}>
+          <Route path = '/Page3' component = {Page3}>
+      </div>
+  </Router>,
+  document.getElementById('app');
+)
+
+exact是精确匹配的意思，当有多层嵌套的时候，它可以帮助精确到想跳转的路由
+现在已经设置路由了，但是需要一个可视的来操作跳转，于是创建Nav组件
+
+新建一个nav.js文件，引入React和React-router-dom两个包
+
+import React from 'React';
+import {NavLink} from 'react-router-dom';
+
+编写基本的nav组件
+
+const NavBar = ()=>(
+  <div>
+    <NavLink exact to= '/'>Page1</NavLink>
+    <NavLink to= '/Page2'>Page2</NavLink>
+    <NavLink to= '/Page3'>Page3</NavLink>
+  </div>
+)
+
+export default NavBar;
+
+再将nav引入到index.js中
+
+import Nav from './nav'
+
+
+ReactDOM.render(
+  <Router>
+      <div>
+        <Nav/>
+          <Route exact path = '/' component = {Page1}>
+          <Route path = '/Page2' component = {Page2}>
+          <Route path = '/Page3' component = {Page3}>
+      </div>
+  </Router>,
+  document.getElementById('app');
+)
+
+
+2.NavLink使用样式
+内联与引入css
+
+在nav.js中引入
+import './nav.css';
+<NavLink exact to='/' className="blue">Jspanga</NavLink> |&nbsp;
+
+内联
+<NavLink exact to='/' style={{color:'red',fontSize:'50px'}}>Jspanga</NavLink>
+
+activeClassName
+激活样式时的样式class
+
+
+3.404页面与跳转设置
+Switch组件
+import {BrowserRouter as Router , Route , Switch} from 'react-router-dom';
+
+编写404页面
+
+import React from 'react';
+export default class Error extends React.Component{
+    render(){
+        return(
+            <h2>404</h2>
+        );
+    }
+}
+
+在nav.js页面中加入一个不存在的链接NavLink，为的时让它在错误的时候能自动跳转到404页面上。
+NavLink to='/react' activeClassName='active'>404</NavLink>
+
+改写index.js
+
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {BrowserRouter as Router , Route , Switch} from 'react-router-dom';
+import Page1 from './page1
+import Page2 from './page2'
+import Page3 from './page3'
+import Nav from './nav';
+import Error from './Error';
+
+ReactDOM.render(
+    
+    <Router>
+        <div>
+         <Nav/>
+            <Switch>
+                <Route  exact  path="/"  component={Page1} />
+                <Route  path="/Page2" component={Page2} />
+                <Route  path="/Page3" component={Page3} />
+                <Route  component={Error} />
+            </Switch>
+            
+        </div>
+    </Router>,
+    document.getElementById("app")
+);
+
+注意：错误页面应该放在最后面
+
+
+Redirect组件
+一个链接点击后直接跳转到其它链接
+
+在index.js中引入Redirect组件
+import {BrowserRouter as Router , Route , Switch ,Redirect} from 'react-router-dom';
+
+在nav.js里加入一个准备跳转的链接
+<Redirect from="/Page3" to="/Page2" />
+
+当点击的链接是Page3时候跳转到Page2
+
+3.路由传值
+<NavLink to= '/Page2/value'>Page2</NavLink>
+
+告诉路由通过冒号（：）
+
+<Route path = '/Page2/:param'  component={Page2} />
+
+输出props看看
+
+import React from 'react'
+export default class lbh1 extends React.Component {
+    componentWillMount(){
+        console.log(this.props);
+    }
+    render() {
+        return (
+            <div>
+                默认页面B
+            </div>
+        )
+    }
+}
+
+可以在match 中的params中发现参数，打印出来
+
+import React from 'react'
+export default class lbh1 extends React.Component {
+    componentWillMount(){
+        console.log(this.props);
+    }
+    render() {
+        return (
+            <div>
+                默认页面B 参数：{this.props.match.params.param}
+            </div>
+        )
+    }
+}
+
+传多值
+<NavLink to= '/Page2/value/value2'>Page2</NavLink>
+
+设置路由
+
+
+<Route path = '/Page2/:param/:name'  component={Page2} />
+
+打印出来
+import React from 'react'
+export default class lbh1 extends React.Component {
+    componentWillMount(){
+        console.log(this.props);
+    }
+    render() {
+        return (
+            <div>
+                默认页面B 参数1：{this.props.match.params.param} + 参数2：{this.props.match.params.name}
+            </div>
+        )
+    }
+}
+
+4.Router中的属性和路由模式
+basename属性 
+<Router basename="demo"></Router>
+设置好后，所有导航路径都加入了demo层级，如果是单个路由需要单独设置
+
+forceRefresh属性
+这个属性的作用是开启或者关闭React Router，也就是说如果你把forceRefresh的值设置成真，它将关闭React路由系统，而真实的去服务器端请求信息。
+
+<Router basename="demo" forceRefresh={true}></Router>
+这个操作经常使用在大型项目，在服务器跳转和ReactRouter切换时使用。比如作一个APP活动页面，第一次请求时我们到服务器端请求整个页面，然后请求后，整个页面DOM进行本地缓存，生成React Router实现本地单页应用。 只要设置我们的forceRefresh就可以了。
+
+5种路由方式
+
+BrowserRouter：浏览器的路由方式，也是我们一直在学习的路由方式，在开发中最常使用。
+HashRouter：在路径前加入#号成为一个哈希值。Hash模式的好处是，再也不会因为我们刷新而找不到我们的对应路径了。
+MemoryRouter：不存储history，所有路由过程保存在内存里，不能进行前进后退，因为地址栏没有发生任何变化。
+NativeRouter：经常配合ReactNative使用，多用于移动端，以后ReactNative课程中会详细讲解。
+StaticRouter：设置静态路由，需要和后台服务器配合设置，比如设置服务端渲染时使用。
+
+5.prompt用法
+在很多网站应用中，当你想离开页面时都会弹出一个提示框（alert），让你选择是否残忍离开。React路由也为我们准备了这样的组件，就是prompt。
+
+import {Prompt} from 'react-router-dom';
+
+需要注意的是，如果你用MemoryRouter路由模式，<Prompt>不起作用。
+
+<Prompt>标签有两个属性：
+
+message：用于显示提示的文本信息。
+when：传递布尔值，相当于标签的开关，默认是true，设置成false时，<Prompt>失效。
